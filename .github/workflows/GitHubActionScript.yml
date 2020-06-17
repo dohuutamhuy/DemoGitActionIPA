@@ -1,0 +1,74 @@
+name: Xcode build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    
+    env:
+      XC_VERSION: ${{ '11.4' }}
+      XC_WORKSPACE: ${{ 'TestGitActions.xcodeproj/project.xcworkspace' }}
+      XC_SCHEME: ${{ 'TestGitActions' }}
+      XC_ARCHIVE_PATH: ${{ './TestGitActions.xcarchive' }}
+      XC_EXPORT_PATH: ${{ 'Export' }}
+      XC_CONFIGURATOR: ${{ 'Release' }}
+      ENCRYPTED_CERTS_FILE_PATH: ${{ 'TestKR.p12.gpg' }}
+      DECRYPTED_CERTS_FILE_PATH: ${{ 'TestKR.p12' }}
+      ENCRYPTED_PROVISION_FILE_PATH: ${{ 'TestKR.mobileprovision.gpg' }}
+      DECRYPTED_PROVISION_FILE_PATH: ${{ 'TestKR.mobileprovision' }}
+      CERTS_ENCRYPTION_PWD: ${{ secrets.CERTS_ENCRYPTION_PWD}}
+      CERTS_EXPORT_PWD: ${{ secrets.CERTS_EXPORT_PWD}}
+      PROVISION_ENCRYPTION_PWD: ${{ secrets.PROVISION_ENCRYPTION_PWD}}
+      KEYCHAIN: ${{ 'demo.keychain' }}
+      
+    steps:
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_$XC_VERSION.app
+            
+    #This step to clone the repo to github VM machine
+    - uses: actions/checkout@v2
+
+    - name: Configure Keychain
+      run: |
+          security create-keychain -p "" "$KEYCHAIN"
+          security list-keychains -s "$KEYCHAIN"
+          security default-keychain -s "$KEYCHAIN"
+          security unlock-keychain -p "" "$KEYCHAIN"
+          security set-keychain-settings
+          security list-keychains
+          
+    - name: Configure Code Signing
+      run: |
+          gpg -d -o "$DECRYPTED_CERTS_FILE_PATH" --pinentry-mode=loopback --passphrase "$CERTS_ENCRYPTION_PWD" "$ENCRYPTED_CERTS_FILE_PATH"
+          gpg -d -o "$DECRYPTED_PROVISION_FILE_PATH" --pinentry-mode=loopback --passphrase "$PROVISION_ENCRYPTION_PWD" "$ENCRYPTED_PROVISION_FILE_PATH"
+          security import "$DECRYPTED_CERTS_FILE_PATH" -k "$KEYCHAIN" -P "$CERTS_EXPORT_PWD" -A
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "TestKR.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/89fb8325-6e94-4d5e-9741-2a8dc1f94426.mobileprovision"
+      
+    - name: Archive Project
+      run: /usr/bin/xcodebuild -workspace "$XC_WORKSPACE" -scheme "$XC_SCHEME" archive -sdk iphoneos -configuration "$XC_CONFIGURATOR" -archivePath "$XC_ARCHIVE_PATH" -derivedDataPath "DerivedData"
+      
+    - name: Exporting IPA
+      run: |
+          /usr/libexec/PlistBuddy -c Clear _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add method string development" _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add signingStyle string manual" _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add provisioningProfiles dict" _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c "Add provisioningProfiles:com.kryptowire.iosunittestapp.objc string Unit Test App ObjectiveC (Development)" _XcodeTaskExportOptions.plist
+          /usr/bin/xcodebuild -exportArchive -archivePath "$XC_ARCHIVE_PATH" -exportPath "$XC_EXPORT_PATH" -exportOptionsPlist _XcodeTaskExportOptions.plist
+    
+    # Submitting to Kryptowire Server steps
+    - name: Kryptowire Analysis
+      uses: pkumar001/kryptowire-analysis-action@master
+
+    - name: Kryptowire Analysis Submission
+      id: appSubmission
+      uses: pkumar001/kryptowire-analysis-action@master
+      with:
+        path-to-file: ${{env.XC_EXPORT_PATH}}/${{env.XC_SCHEME}}.ipa #usually the IPA name is based on the scheme name
+        platform: "ios"
+        apiKey: ${{ secrets.KRYPTOWIRE_API_KEY }}
+
+    

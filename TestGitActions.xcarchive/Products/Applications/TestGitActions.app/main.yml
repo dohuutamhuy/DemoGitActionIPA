@@ -1,0 +1,69 @@
+name: Xcode build
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macOS-latest
+    
+    env:
+      XC_VERSION: ${{ '11.4' }}
+      XC_WORKSPACE: ${{ 'TestGitActions.xcodeproj/project.xcworkspace' }}
+      XC_SCHEME: ${{ 'TestGitActions' }}
+      XC_ARCHIVE_PATH: ${{ './TestGitActions.xcarchive' }}
+      XC_EXPORT_PATH: ${{ 'Export' }}
+      XC_CONFIGURATOR: ${{ 'Release' }}
+      XC_DESTINATION: ${{ 'platform=iOS Simulator,name=iPhone 8' }}      
+      ENCRYPTED_CERTS_FILE_PATH: ${{ 'certs.p12.gpg' }}
+      DECRYPTED_CERTS_FILE_PATH: ${{ 'certs.p12' }}
+      ENCRYPTED_PROVISION_FILE_PATH: ${{ 'provisioning.tar.gz.gpg' }}
+      DECRYPTED_PROVISION_FILE_PATH: ${{ 'provisioning.tar.gz' }}
+      CERTS_ENCRYPTION_PWD: ${{ secrets.CERTS_ENCRYPTION_PWD}}
+      CERTS_EXPORT_PWD: ${{ secrets.CERTS_EXPORT_PWD}}
+      PROVISION_ENCRYPTION_PWD: ${{ secrets.PROVISION_ENCRYPTION_PWD}}
+      KEYCHAIN: ${{ 'test.keychain' }}
+      
+    steps:
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_$XC_VERSION.app
+
+    - name: Xcode version
+      run: /usr/bin/xcodebuild -version
+    - uses: actions/checkout@v2
+    - name: Configure Keychain
+      run: |
+          security create-keychain -p "" "$KEYCHAIN"
+          security list-keychains -s "$KEYCHAIN"
+          security default-keychain -s "$KEYCHAIN"
+          security unlock-keychain -p "" "$KEYCHAIN"
+          security set-keychain-settings
+          security list-keychains
+    - name: Configure Code Signing
+      run: |
+          gpg -d -o "$DECRYPTED_CERTS_FILE_PATH" --pinentry-mode=loopback --passphrase "$CERTS_ENCRYPTION_PWD" "$ENCRYPTED_CERTS_FILE_PATH"
+          gpg -d -o "$DECRYPTED_PROVISION_FILE_PATH" --pinentry-mode=loopback --passphrase "$PROVISION_ENCRYPTION_PWD" "$ENCRYPTED_PROVISION_FILE_PATH"
+          security import "$DECRYPTED_CERTS_FILE_PATH" -k "$KEYCHAIN" -P "$CERTS_EXPORT_PWD" -A
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" "$KEYCHAIN"
+          tar xzvf $DECRYPTED_PROVISION_FILE_PATH
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "gitactiontest.mobileprovision" "$HOME/Library/MobileDevice/Provisioning Profiles/54ced379-29c3-4498-8921-d4df9760213f.mobileprovision"
+      
+    - name: Run Unit and UI Tests
+      run: /usr/bin/xcodebuild -workspace "$XC_WORKSPACE" -scheme "$XC_SCHEME" archive -sdk iphoneos -configuration "$XC_CONFIGURATOR" -archivePath "$XC_ARCHIVE_PATH" -derivedDataPath "DerivedData"
+    - uses: actions/upload-artifact@v2
+      with:
+          name: my-artifact
+          path: ./TestGitActions.xcarchive/
+    - name: continue building
+      run: |
+          /usr/bin/security cms -D -i "$XC_ARCHIVE_PATH"/Products/Applications/TestGitAction.app/embedded.mobileprovision
+          /usr/libexec/PlistBuddy -c Clear _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c Add method string development _XcodeTaskExportOptions.plist
+          /usr/bin/security cms -D -i "$XC_ARCHIVE_PATH"/Products/Applications/TestGitAction.app/embedded.mobileprovision
+          /usr/libexec/PlistBuddy -c Add signingStyle string manual _XcodeTaskExportOptions.plist
+          /usr/libexec/PlistBuddy -c Add provisioningProfiles dict _XcodeTaskExportOptions.plist
+          /usr/bin/security cms -D -i "$XC_ARCHIVE_PATH"/Products/Applications/TestGitAction.app/embedded.mobileprovision
+          /usr/libexec/PlistBuddy -c Add provisioningProfiles:com.test.githubaction string iOS Team Provisioning Profile _XcodeTaskExportOptions.plist
+          /usr/bin/xcodebuild -exportArchive -archivePath "$XC_ARCHIVE_PATH" -exportPath "$XC_EXPORT_PATH" -exportOptionsPlist _XcodeTaskExportOptions.plist
+      #-archivePath "$XC_ARCHIVE_PATH" -destination "$XC_DESTINATION"
+      #/usr/bin/xcodebuild -sdk iphoneos -configuration "$XC_CONFIGURATOR" -workspace "$XC_WORKSPACE" -scheme "$XC_SCHEME" build -derivedDataPath "DerivedData"

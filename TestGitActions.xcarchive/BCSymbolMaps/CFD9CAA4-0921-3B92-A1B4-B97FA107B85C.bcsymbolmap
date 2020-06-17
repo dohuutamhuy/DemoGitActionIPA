@@ -1,0 +1,95 @@
+BCSymbolMap Version: 2.0
+_OBJC_CLASS_$_AppDelegate
+_OBJC_CLASSLIST_REFERENCES_$_
+_OBJC_SELECTOR_REFERENCES_
+Apple clang version 11.0.3 (clang-1103.0.32.29)
+/Users/runner/runners/2.263.0/work/TestGitAction/TestGitAction/TestGitActions/main.m
+/Users/runner/runners/2.263.0/work/TestGitAction/TestGitAction
+main
+TestGitActions/main.m
+-[ViewController viewDidLoad]
+_OBJC_CLASS_$_ViewController
+_OBJC_CLASSLIST_SUP_REFS_$_
+__OBJC_METACLASS_RO_$_ViewController
+_OBJC_METACLASS_$_ViewController
+__OBJC_$_INSTANCE_METHODS_ViewController
+__OBJC_CLASS_RO_$_ViewController
+_OBJC_LABEL_CLASS_$
+/Users/runner/runners/2.263.0/work/TestGitAction/TestGitAction/TestGitActions/ViewController.m
+TestGitActions/ViewController.m
+-[AppDelegate application:didFinishLaunchingWithOptions:]
+-[AppDelegate application:configurationForConnectingSceneSession:options:]
+-[AppDelegate application:didDiscardSceneSessions:]
+-[AppDelegate persistentContainer]
+___34-[AppDelegate persistentContainer]_block_invoke
+-[AppDelegate saveContext]
+-[AppDelegate .cxx_destruct]
+___34-[AppDelegate persistentContainer]_block_invoke.cold.1
+-[AppDelegate saveContext].cold.1
+_OBJC_SELECTOR_REFERENCES_.2
+_OBJC_IVAR_$_AppDelegate._persistentContainer
+_OBJC_CLASSLIST_REFERENCES_$_.3
+_OBJC_SELECTOR_REFERENCES_.7
+___block_descriptor_32_e50_v24?0"NSPersistentStoreDescription"8"NSError"16l
+___block_literal_global
+_OBJC_SELECTOR_REFERENCES_.12
+_OBJC_SELECTOR_REFERENCES_.14
+_OBJC_SELECTOR_REFERENCES_.16
+_OBJC_SELECTOR_REFERENCES_.18
+_OBJC_SELECTOR_REFERENCES_.20
+_OBJC_SELECTOR_REFERENCES_.22
+__OBJC_$_PROTOCOL_INSTANCE_METHODS_NSObject
+__OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_NSObject
+__OBJC_$_PROP_LIST_NSObject
+__OBJC_$_PROTOCOL_METHOD_TYPES_NSObject
+__OBJC_PROTOCOL_$_NSObject
+__OBJC_LABEL_PROTOCOL_$_NSObject
+__OBJC_$_PROTOCOL_REFS_UIApplicationDelegate
+__OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_UIApplicationDelegate
+__OBJC_$_PROP_LIST_UIApplicationDelegate
+__OBJC_$_PROTOCOL_METHOD_TYPES_UIApplicationDelegate
+__OBJC_PROTOCOL_$_UIApplicationDelegate
+__OBJC_LABEL_PROTOCOL_$_UIApplicationDelegate
+__OBJC_CLASS_PROTOCOLS_$_AppDelegate
+__OBJC_METACLASS_RO_$_AppDelegate
+_OBJC_METACLASS_$_AppDelegate
+__OBJC_$_INSTANCE_METHODS_AppDelegate
+__OBJC_$_INSTANCE_VARIABLES_AppDelegate
+__OBJC_$_PROP_LIST_AppDelegate
+__OBJC_CLASS_RO_$_AppDelegate
+/Users/runner/runners/2.263.0/work/TestGitAction/TestGitAction/TestGitActions/AppDelegate.m
+TestGitActions/AppDelegate.m
+__34-[AppDelegate persistentContainer]_block_invoke
+-[SceneDelegate scene:willConnectToSession:options:]
+-[SceneDelegate sceneDidDisconnect:]
+-[SceneDelegate sceneDidBecomeActive:]
+-[SceneDelegate sceneWillResignActive:]
+-[SceneDelegate sceneWillEnterForeground:]
+-[SceneDelegate sceneDidEnterBackground:]
+-[SceneDelegate window]
+-[SceneDelegate setWindow:]
+-[SceneDelegate .cxx_destruct]
+_OBJC_SELECTOR_REFERENCES_.4
+_OBJC_IVAR_$_SceneDelegate._window
+__OBJC_$_PROTOCOL_REFS_UISceneDelegate
+__OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_UISceneDelegate
+__OBJC_$_PROTOCOL_METHOD_TYPES_UISceneDelegate
+__OBJC_PROTOCOL_$_UISceneDelegate
+__OBJC_LABEL_PROTOCOL_$_UISceneDelegate
+__OBJC_$_PROTOCOL_REFS_UIWindowSceneDelegate
+__OBJC_$_PROTOCOL_INSTANCE_METHODS_OPT_UIWindowSceneDelegate
+__OBJC_$_PROP_LIST_UIWindowSceneDelegate
+__OBJC_$_PROTOCOL_METHOD_TYPES_UIWindowSceneDelegate
+__OBJC_PROTOCOL_$_UIWindowSceneDelegate
+__OBJC_LABEL_PROTOCOL_$_UIWindowSceneDelegate
+__OBJC_CLASS_PROTOCOLS_$_SceneDelegate
+__OBJC_METACLASS_RO_$_SceneDelegate
+_OBJC_METACLASS_$_SceneDelegate
+__OBJC_$_INSTANCE_METHODS_SceneDelegate
+__OBJC_$_INSTANCE_VARIABLES_SceneDelegate
+__OBJC_$_PROP_LIST_SceneDelegate
+__OBJC_CLASS_RO_$_SceneDelegate
+_OBJC_CLASS_$_SceneDelegate
+/Users/runner/runners/2.263.0/work/TestGitAction/TestGitAction/TestGitActions/SceneDelegate.m
+TestGitActions/SceneDelegate.m
+TestGitActions/SceneDelegate.h
