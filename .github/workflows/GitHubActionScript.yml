@@ -60,9 +60,6 @@ jobs:
           /usr/bin/xcodebuild -exportArchive -archivePath "$XC_ARCHIVE_PATH" -exportPath "$XC_EXPORT_PATH" -exportOptionsPlist _XcodeTaskExportOptions.plist
     
     # Submitting to Kryptowire Server steps
-    - name: Kryptowire Analysis
-      uses: pkumar001/kryptowire-analysis-action@master
-
     - name: Kryptowire Analysis Submission
       id: appSubmission
       uses: pkumar001/kryptowire-analysis-action@master
